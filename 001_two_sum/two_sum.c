@@ -20,6 +20,7 @@
 struct object {
     int val;
     int index;
+    int idx;
 };
 
 static int compare(const void *a, const void *b)
@@ -37,7 +38,6 @@ static int * twosum1(int *nums, int numsSize, int target)
     }
     qsort(objs, numsSize, sizeof(*objs), compare);
     
-    int count = 0;
     int *results = malloc(2 * sizeof(int));
     i = 0;
     j = numsSize - 1;
@@ -59,14 +59,14 @@ static int * twosum1(int *nums, int numsSize, int target)
 //brute force
 static int * twosum2(int *nums, int numsSize, int target)
 {
-	int i, j;
-	if (numsSize < 2) return NULL;
+	int i, j, *ret;
+	if (!nums || numsSize < 2) return NULL;
 
-	int *ret = malloc(2*sizeof(int));
 	for(i=0; i<numsSize; ++i){
-		for(j=numsSize-1; j>i+1; --j){
+		for(j=numsSize-1; j>i; --j){
 			//printf("i: %d (%d) j: %d (%d)\n", i, nums[i], j, nums[j]);
 			if(target == (nums[i] + nums[j])){
+				ret = malloc(2*sizeof(int));
 				ret[0] = i; ret[1] = j;
 				return ret;
 			}
@@ -77,14 +77,14 @@ static int * twosum2(int *nums, int numsSize, int target)
 
 int main(void)
 {
-    //int nums[] = {-1, -2, -3, -4, -5};
-    //int target = -8;
+    int nums[] = {-1, -2, -3, -4, -5};
+    int target = -8;
     //int nums[] = {0,4,3,0};
     //int target = 0;
-    int nums[] = { 3, 2, 3 };
+    //int nums[] = { 3, 2, 3 };
+    //int target = 6;
     int count = sizeof(nums) / sizeof(*nums);
-    int target = 6;
-    int *indexes = twosum2(nums, count, target);
+    int *indexes = twosum1(nums, count, target);
     if (indexes != NULL) {
         printf("%d %d\n", indexes[0], indexes[1]);
     } else {
