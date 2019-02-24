@@ -73,6 +73,9 @@ int lengthOfLongestSubstring2(char* s)
 int main(int argc, char **argv)
 {
 	// ./test bbtablud
+	//./test au
+	//./test pwwkew
+	//./test ckilbkd   dvdf  bbtablud
     if (argc != 2) {
         fprintf(stderr, "Usage: ./test string\n");
         exit(-1);
