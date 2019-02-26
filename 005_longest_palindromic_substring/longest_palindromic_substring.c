@@ -104,10 +104,10 @@ static char *longestPalindrom2(char *s)
 	return ret;
 }
 
-//dp.  todo...
+//dp.
 static char *longestPalindrom3(char *s)
 {
-	int i, j, left = 0, right = 0;
+	int i, j, max = 0, right = 0, left = 0;
 	int len = strlen(s);
 	int **dp = (int **)malloc(sizeof(int *) * len);
 	for(i=0; i<len; ++i){
@@ -117,8 +117,8 @@ static char *longestPalindrom3(char *s)
 	for (i = 0; i < len; ++i) {
 		for (j = 0; j < i; ++j) {
 			dp[j][i] = (s[i] == s[j] && (i - j < 2 || dp[j + 1][i - 1]));
-			if (dp[j][i] && len < i - j + 1) {
-				len = i - j + 1;
+			if (dp[j][i] && max < i - j + 1) {
+				max = i - j + 1;
 				left = j;
 				right = i;
 			}
@@ -126,7 +126,7 @@ static char *longestPalindrom3(char *s)
 		dp[i][i] = 1;
 	}
 	i = right - left + 1;
-	char *ret = malloc(sizeof(char)*i);
+	char *ret = malloc(sizeof(char)*(i+1));
 	strncpy(ret, s+left, i);
 	ret[i] = '\0';
 	return ret;
