@@ -88,8 +88,18 @@ static char *intToRoman(int num)
     return roman_numeral;
 }
 
-//直接按位查表，时间复杂度O(1)
+//分为四类，100到300一类，400一类，500到800一类，900最后一类
 static char *intToRoman2(int num)
+{
+}
+
+//建立一个数表，每次通过查表找出当前最大的数，减去再继续查表
+static char *intToRoman3(int num)
+{
+}
+
+//直接按位查表，时间复杂度O(1)
+static char *intToRoman4(int num)
 {
 #define ROMAN_SIZE 20
 	int n;
