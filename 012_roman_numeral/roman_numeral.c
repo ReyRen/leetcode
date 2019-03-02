@@ -2,106 +2,65 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void num2char(char **num, int bit, int n)
-{
-    int i;
-    char low, mid, high;
-    char *p = *num;
+#define ROMAN_SIZE 20
 
-    switch (n) {
-    case 2:
-        low = 'C';
-        mid = 'D';
-        high = 'M';
-    break;
-    case 1:
-        low = 'X';
-        mid = 'L';
-        high = 'C';
-    break;
-    case 0:
-        low = 'I';
-        mid = 'V';
-        high = 'X';
-    break;
-    }
-
-    if (bit > 0) {
-        switch (bit) {
-        case 1:
-        case 2:
-        case 3:
-            for (i = 0; i < bit; i++) {
-                *p++ = low;
-            }
-            break;
-        case 4:
-            *p++ = low;
-            *p++ = mid;
-            break;
-        case 5:
-            *p++ = mid;
-            break;
-        case 6:
-        case 7:
-        case 8:
-            *p++ = mid;
-            for (i = 5; i < bit; i++) {
-                *p++ = low;
-            }
-            break;
-        case 9:
-            *p++ = low;
-            *p++ = high;
-            break;
-        }
-    }
-
-    *num = p;
-}
-
-static char roman_numeral[64];
-
-static char *intToRoman(int num)
-{
-    char *p = &roman_numeral[0];
-    int thousand_bit = num / 1000;
-    int hundred_bit = (num % 1000) / 100;
-    int ten_bit = (num % 100) / 10;
-    int one_bit = num % 10;
-    int i;
-
-    memset(roman_numeral, 0, sizeof(roman_numeral));
-
-    if (thousand_bit > 0) {
-        if (thousand_bit < 4) {
-            for (i = 0; i < thousand_bit; i++) {
-                *p++ = 'M';
-            }
-        }
-    }
-
-    num2char(&p, hundred_bit, 2);
-    num2char(&p, ten_bit, 1);
-    num2char(&p, one_bit, 0);
-
-    return roman_numeral;
-}
-
-//分为四类，100到300一类，400一类，500到800一类，900最后一类
+/* 分为四类，100到300一类，400一类，500到800一类，900最后一类
+ * 100 - C 200 - CC 300 - CCC
+ * 400 - CD
+ * 500 - D 600 - DC 700 - DCC 800 - DCCC
+ * 900 - CM
+ */
 static char *intToRoman2(int num)
 {
+	char roman[] = {'M',  'D', 'C', 'L', 'X', 'V', 'I'};
+	int  value[] = {1000, 500, 100, 50,  10,  5,   1};
+	int i, j, x, len = 0;
+	char *p;
+	char *ret = (char *)malloc(sizeof(char) * ROMAN_SIZE);
+	p = ret;
+	for(i=0; i<7; i+=2){ //step is 2 on every loop
+		x = num / value[i];
+		if (x < 4) {
+			for(j=1; j<=x; ++j)memcpy(ret++, roman+i, 1);
+		} else if (x == 4) {
+			memcpy(ret++, roman+i, 1);
+			memcpy(ret++, roman+i-1, 1);
+		} else if (x > 4 && x < 9) {
+			memcpy(ret++, roman+i-1, 1);
+			for (j = 6; j <= x; ++j) memcpy(ret++, roman+i, 1);
+		} else if (x == 9) {
+			memcpy(ret++, roman+i, 1);
+			memcpy(ret++, roman+i-2, 1);
+		}
+		num %= value[i];
+	}
+	*ret = '\0';
+	return p;
 }
 
 //建立一个数表，每次通过查表找出当前最大的数，减去再继续查表
 static char *intToRoman3(int num)
 {
+	int i;
+	int  val[13] = {1000, 900, 500, 400,  100,  90,  50,  40,   10,   9,   5,   4,    1};
+	char *str[13] = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+	int strSize[13] = {1,  2,    1,   2,    1,   2,   1,    2,    1,   2,    1,   2,    1};
+	char *ret = (char *)malloc(sizeof(char) * ROMAN_SIZE);
+	char *p = ret;
+	for (i = 0; i < 13; ++i) {
+		while (num >= val[i]) {
+			num -= val[i];
+			memcpy(ret, str[i], strSize[i]);
+			ret += strSize[i];
+		}
+	}
+	*ret = '\0';
+	return p;
 }
 
 //直接按位查表，时间复杂度O(1)
 static char *intToRoman4(int num)
 {
-#define ROMAN_SIZE 20
 	int n;
 	char *ret = (char *)malloc(sizeof(char) * ROMAN_SIZE);
 	char* v1[] = {"", "M", "MM", "MMM"};
@@ -115,6 +74,6 @@ static char *intToRoman4(int num)
 
 int main(int argc, char **argv) {
 	//./test 58 LVIII   9 IX    1994 MCMXCIV
-    printf("%s\n", intToRoman2(atoi(argv[1])));
+    printf("%s\n", intToRoman3(atoi(argv[1])));
     return 0;
 }
