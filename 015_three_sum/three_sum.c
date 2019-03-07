@@ -46,7 +46,50 @@ static int** threeSum(int* nums, int numsSize, int* returnSize)
             two_sum(nums, i + 1, numsSize - 1, -nums[i], results, returnSize);
         }
     }
+	//need call free(results) when returnSize is 0.
     return results;
+}
+
+//double pointer
+static int** threeSum2(int* nums, int numsSize, int* returnSize)
+{
+	*returnSize = 0;
+    if (numsSize < 3) {
+        return NULL;
+    }
+
+    qsort(nums, numsSize, sizeof(*nums), compare);
+    int i, j, k, capacity = 50000;
+    int **ret = malloc(capacity * sizeof(int *));
+	for(i=0; i<numsSize; ++i){
+		j = i + 1;
+		k = numsSize - 1;
+		while(j<k){
+			if(nums[i] + nums[j] + nums[k] == 0){
+				ret[*returnSize] = malloc(sizeof(int) * 3);
+				ret[*returnSize][0] = nums[i];
+				ret[*returnSize][1] = nums[j];
+				ret[*returnSize][2] = nums[k];
+				(*returnSize)++;
+				++j; --k;
+				//skip duplicates of n & m
+				while(j<k && nums[j-1] == nums[j]) ++j;
+				while(j<k && nums[k] == nums[k+1]) --k;
+			} else if (nums[i] + nums[j] + nums[k] < 0){
+				++j;
+			} else {
+				--k;
+			}
+
+			//skip duplicates of i
+			while(i<numsSize-1 && nums[i] == nums[i+1]) ++i;
+		}
+	}
+	if(*returnSize == 0) {
+		free(ret);
+		return NULL;
+	}
+	return ret;
 }
 
 int main(void)
@@ -56,7 +99,7 @@ int main(void)
     //int nums[] = { 0, 0, 0 };
     //int nums[] = { -1, 0, 1, 0 };
     int nums[] = {-2,0,0,2,2};
-    int **triplets = threeSum(nums, sizeof(nums) / sizeof(*nums), &count);
+    int **triplets = threeSum2(nums, sizeof(nums) / sizeof(*nums), &count);
     for (i = 0; i < count; i++) {
         printf("%d %d %d\n", triplets[i][0], triplets[i][1], triplets[i][2]);
     }
